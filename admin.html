@@ -11,13 +11,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { 
-    getFirestore,
-    collection,
-    onSnapshot,
-    deleteDoc,
-    doc,
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, collection, onSnapshot, deleteDoc, doc } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDyrL_U04KFTaVeARyI4UoWNVrZT4TtzI",
@@ -33,26 +28,27 @@
 
   const ordersDiv = document.getElementById("orders");
 
-  // 🔥 오래된 주문 → 위, 새 주문 → 아래
-  const q = collection(db, "orders");
-
-
-  onSnapshot(q, (snapshot) => {
+  onSnapshot(collection(db, "orders"), (snapshot) => {
     ordersDiv.innerHTML = "";
-
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       const div = document.createElement("div");
-
       div.innerHTML = `
-        <p><strong>${data.table}번 테이블</strong></p>
-        <p>☕ ${data.menu}</p>
-        <button onclick="finish('${docSnap.id}')">완료</button>
-        <hr>
-      `;
+  <p><strong>${data.table}번 테이블</strong></p>
+  <p>☕ ${data.menu}</p>
+  <p>⏰ ${data.time}</p>
+  <button onclick="finish('${docSnap.id}')">완료</button>
+`;
 
+         
       ordersDiv.appendChild(div);
     });
   });
 
-  window.finish = async (id) =
+  window.finish = async (id) => {
+    await deleteDoc(doc(db, "orders", id));
+  };
+</script>
+
+</body>
+</html>
